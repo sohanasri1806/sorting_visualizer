@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LRU Cache Visualizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-project-diagram"></i> LRU Cache Visualizer</h1>
+            <p class="subtitle">Visualize how Least Recently Used (LRU) cache works. Add items to the cache and see how the cache evicts the least recently used item when it's full.</p>
+        </header>
+
+        <div class="content">
+            <div class="control-panel">
+                <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Cache Controls</h2>
+                <div class="cache-controls">
+                    <div class="input-group">
+                        <label for="cache-size">Cache Size (Max Items)</label>
+                        <input type="number" id="cache-size" min="1" max="10" value="5">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="key-input">Key</label>
+                        <input type="text" id="key-input" placeholder="Enter key (e.g., A, B, C)">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="value-input">Value</label>
+                        <input type="text" id="value-input" placeholder="Enter value (e.g., 1, 2, 3)">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="operation">Operation</label>
+                        <select id="operation">
+                            <option value="put">Put (Add to Cache)</option>
+                            <option value="get">Get (Retrieve from Cache)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button id="execute-btn"><i class="fas fa-play-circle"></i> Execute Operation</button>
+                        <button id="reset-btn" class="reset"><i class="fas fa-redo"></i> Reset Cache</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <h2 class="panel-title"><i class="fas fa-eye"></i> Cache Visualization</h2>
+                <div class="cache-visual">
+                    <div class="cache-size-display">
+                        Cache Size: <span id="current-cache-size">5</span> items
+                    </div>
+                    
+                    <div class="cache-slots" id="cache-slots">
+                        <!-- Cache slots will be dynamically generated here -->
+                    </div>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color mru-color"></div>
+                            <span>Most Recently Used (MRU)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color lru-color"></div>
+                            <span>Least Recently Used (LRU)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color active-color"></div>
+                            <span>Active Operation</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="hit-count">0</div>
+                            <div class="stat-label">Cache Hits</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="miss-count">0</div>
+                            <div class="stat-label">Cache Misses</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="cache-size-display">0/5</div>
+                            <div class="stat-label">Cache Usage</div>
+                        </div>
+                    </div>
+                    
+                    <div class="operations-log">
+                        <div class="log-title">Operation Log</div>
+                        <div id="log-entries">
+                            <div class="log-entry">Cache initialized with size 5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>LRU Cache Visualizer | How it works: When the cache is full and a new item needs to be added, the Least Recently Used item is evicted to make space.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

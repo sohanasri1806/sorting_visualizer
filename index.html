@@ -1,109 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LRU Cache Visualizer</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorting Visualizer</title>
+<meta name="description" content="Interactive Sorting Visualizer with Bubble, Selection, Insertion, Quick, Merge, Heap, Radix, and Bucket Sort. Step navigation, history, and animations included.">
+
+<style>
+* { box-sizing: border-box; font-family: system-ui, sans-serif; }
+body { margin: 0; background: #f1f5f9; }
+header { background: linear-gradient(90deg,#2563eb,#22d3ee); color:white; text-align:center; padding:14px; font-size:22px; font-weight:600; }
+main { display:grid; grid-template-columns:3fr 1fr; height:calc(100vh - 64px); }
+.workspace { padding:16px; display:flex; flex-direction:column; align-items:center; }
+.controls { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:10px; }
+input, select { padding:8px; border-radius:6px; border:1px solid #cbd5e1; }
+button { padding:8px 12px; border-radius:6px; border:none; background:#2563eb; color:white; cursor:pointer; }
+button.gray { background:#64748b }
+button.warn { background:#dc2626 }
+button.secondary { background:#16a34a }
+.visualizer { display:flex; align-items:flex-end; justify-content:center; height:360px; width:100%; margin-top:12px; flex-wrap: wrap; }
+.bar { width:28px; margin:0 3px; background:#38bdf8; border-radius:6px 6px 0 0; display:flex; justify-content:center; position:relative; transition:height .3s, background .3s; }
+.bar span { position:absolute; bottom:4px; font-size:12px; font-weight:600; }
+.bar.compare { background:#facc15 }
+.bar.swap { background:#ef4444 }
+.bar.sorted { background:#22c55e }
+.node, .bucket-box { margin:2px; border-radius:4px; height:28px; width:28px; display:flex; justify-content:center; align-items:center; font-size:12px; color:#020617; transition: all 0.3s;}
+.node.compare, .bucket-box.compare { background:#facc15 }
+.node.swap, .bucket-box.swap { background:#ef4444 }
+.node.sorted, .bucket-box.sorted { background:#22c55e }
+.merge-container, .heap-container, .radix-container, .bucket-container { display:flex; justify-content:center; width:100%; flex-wrap:wrap; margin-top:8px; }
+.log { margin-top:10px; background:white; padding:10px; border-radius:8px; width:90%; text-align:center; }
+aside { background:white; border-left:1px solid #e5e7eb; padding:12px; overflow-y:auto; }
+aside h3 { margin-top:0 }
+.history div { background:#f1f5f9; padding:6px; margin-bottom:6px; border-radius:4px; font-size:13px; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-project-diagram"></i> LRU Cache Visualizer</h1>
-            <p class="subtitle">Visualize how Least Recently Used (LRU) cache works. Add items to the cache and see how the cache evicts the least recently used item when it's full.</p>
-        </header>
 
-        <div class="content">
-            <div class="control-panel">
-                <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Cache Controls</h2>
-                <div class="cache-controls">
-                    <div class="input-group">
-                        <label for="cache-size">Cache Size (Max Items)</label>
-                        <input type="number" id="cache-size" min="1" max="10" value="5">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="key-input">Key</label>
-                        <input type="text" id="key-input" placeholder="Enter key (e.g., A, B, C)">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="value-input">Value</label>
-                        <input type="text" id="value-input" placeholder="Enter value (e.g., 1, 2, 3)">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="operation">Operation</label>
-                        <select id="operation">
-                            <option value="put">Put (Add to Cache)</option>
-                            <option value="get">Get (Retrieve from Cache)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="buttons">
-                        <button id="execute-btn"><i class="fas fa-play-circle"></i> Execute Operation</button>
-                        <button id="reset-btn" class="reset"><i class="fas fa-redo"></i> Reset Cache</button>
-                    </div>
-                </div>
-            </div>
+<header>Sorting Visualizer</header>
 
-            <div class="visualization">
-                <h2 class="panel-title"><i class="fas fa-eye"></i> Cache Visualization</h2>
-                <div class="cache-visual">
-                    <div class="cache-size-display">
-                        Cache Size: <span id="current-cache-size">5</span> items
-                    </div>
-                    
-                    <div class="cache-slots" id="cache-slots">
-                        <!-- Cache slots will be dynamically generated here -->
-                    </div>
-                    
-                    <div class="legend">
-                        <div class="legend-item">
-                            <div class="legend-color mru-color"></div>
-                            <span>Most Recently Used (MRU)</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color lru-color"></div>
-                            <span>Least Recently Used (LRU)</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color active-color"></div>
-                            <span>Active Operation</span>
-                        </div>
-                    </div>
-                    
-                    <div class="stats">
-                        <div class="stat-item">
-                            <div class="stat-value" id="hit-count">0</div>
-                            <div class="stat-label">Cache Hits</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="miss-count">0</div>
-                            <div class="stat-label">Cache Misses</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="cache-size-display">0/5</div>
-                            <div class="stat-label">Cache Usage</div>
-                        </div>
-                    </div>
-                    
-                    <div class="operations-log">
-                        <div class="log-title">Operation Log</div>
-                        <div id="log-entries">
-                            <div class="log-entry">Cache initialized with size 5</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<main>
+<section class="workspace">
 
-        <footer>
-            <p>LRU Cache Visualizer | How it works: When the cache is full and a new item needs to be added, the Least Recently Used item is evicted to make space.</p>
-        </footer>
-    </div>
+  <div class="controls">
+    <input type="number" id="sizeInput" placeholder="Random size">
+    <button onclick="generateRandom()">Generate Random</button>
+  </div>
 
-    <script src="script.js"></script>
+  <div class="controls">
+    <input id="arrayInput" placeholder="Enter numbers (e.g. 5,3,8)">
+    <button onclick="generateFromInput()">Generate</button>
+  </div>
+
+  <div class="controls">
+    <select id="algorithm">
+      <option value="bubble">Bubble Sort</option>
+      <option value="selection">Selection Sort</option>
+      <option value="insertion">Insertion Sort</option>
+      <option value="quick">Quick Sort</option>
+      <option value="merge">Merge Sort</option>
+      <option value="heap">Heap Sort</option>
+      <option value="radix">Radix Sort</option>
+      <option value="bucket">Bucket Sort</option>
+    </select>
+
+    <label>Speed</label>
+    <input type="range" min="100" max="1000" value="500" id="speed">
+
+    <button class="secondary" onclick="start()">Start</button>
+    <button onclick="pause()">Pause</button>
+    <button onclick="resume()">Resume</button>
+    <button class="gray" onclick="prevStep()">Prev</button>
+    <button class="gray" onclick="nextStep()">Next</button>
+    <button class="warn" onclick="reset()">Reset</button>
+  </div>
+
+  <div class="visualizer" id="visualizer"></div>
+  <div class="log" id="currentAction">Waiting...</div>
+
+</section>
+
+<aside>
+  <h3>History</h3>
+  <div id="history"></div>
+</aside>
+</main>
+
+<script>
+let array = [];
+let steps = [];
+let stepIndex = 0;
+let paused = false;
+let running = false;
+
+function sleep() { return new Promise(res => setTimeout(res, 1100 - document.getElementById("speed").value)); }
+
+function render(highlight={}, sorted=false){
+  const viz = document.getElementById("visualizer");
+  viz.innerHTML="";
+  const algo=document.getElementById("algorithm").value;
+  if(["merge","heap","radix","bucket"].includes(algo)){
+    const container = document.createElement("div");
+    container.className=algo+"-container";
+    array.forEach((v,i)=>{
+      const b=document.createElement("div");
+      b.className=(algo==="heap")?"node":"bucket-box";
+      if(highlight.compare?.includes(i)) b.classList.add("compare");
+      if(highlight.swap?.includes(i)) b.classList.add("swap");
+      if(sorted) b.classList.add("sorted");
+      b.textContent=v;
+      container.appendChild(b);
+    });
+    viz.appendChild(container);
+  } else {
+    array.forEach((v,i)=>{
+      const b=document.createElement("div");
+      b.className="bar";
+      b.style.height=v*3+"px";
+      if(highlight.compare?.includes(i)) b.classList.add("compare");
+      if(highlight.swap?.includes(i)) b.classList.add("swap");
+      if(sorted) b.classList.add("sorted");
+      b.innerHTML=`<span>${v}</span>`;
+      viz.appendChild(b);
+    });
+  }
+}
+
+function setAction(text){
+  document.getElementById("currentAction").textContent=text;
+  const h=document.getElementById("history");
+  const div=document.createElement("div");
+  div.textContent=text;
+  h.prepend(div);
+}
+
+function generateRandom(){ const size=+document.getElementById("sizeInput").value||10; array=Array.from({length:size},()=>Math.floor(Math.random()*90)+10); render(); steps=[]; stepIndex=0; setAction("Random array generated"); document.getElementById("history").innerHTML="";}
+function generateFromInput(){ array=document.getElementById("arrayInput").value.split(",").map(Number); render(); steps=[]; stepIndex=0; setAction("Custom array generated"); document.getElementById("history").innerHTML="";}
+function reset(){ array=[]; steps=[]; stepIndex=0; paused=false; running=false; document.getElementById("visualizer").innerHTML=""; document.getElementById("currentAction").textContent="Waiting..."; document.getElementById("history").innerHTML=""; }
+
+async function runSteps(){ running=true; while(stepIndex<steps.length){ if(paused) return; applyStep(steps[stepIndex]); stepIndex++; await sleep(); } running=false; }
+function applyStep(s){ array=[...s.array]; render(s.highlight,s.sorted); setAction(s.text); }
+function prevStep(){ if(stepIndex<=1) return; stepIndex-=2; applyStep(steps[stepIndex]); stepIndex++; }
+function nextStep(){ if(stepIndex<steps.length){ applyStep(steps[stepIndex]); stepIndex++; }}
+function pause(){paused=true;}
+function resume(){if(paused){paused=false; runSteps();}}
+
+function start(){ if(array.length==0){ alert("Generate array first"); return; } paused=false; steps=[]; stepIndex=0; const algo=document.getElementById("algorithm").value; switch(algo){
+  case "bubble": visualizeBubble(); break;
+  case "selection": visualizeSelection(); break;
+  case "insertion": visualizeInsertion(); break;
+  case "quick": visualizeQuick(); break;
+  case "merge": visualizeMerge(); break;
+  case "heap": visualizeHeap(); break;
+  case "radix": visualizeRadix(); break;
+  case "bucket": visualizeBucket(); break;
+}}
+
+// ------------------ Place your existing bubble, selection, insertion, quick functions here -------------------
+// visualizeBubble, visualizeSelection, visualizeInsertion, visualizeQuick
+async function visualizeBubble(){
+  let a=[...array];
+  for(let i=0;i<a.length;i++){
+    for(let j=0;j<a.length-i-1;j++){
+      steps.push({array:[...a], highlight:{compare:[j,j+1]}, text:`Comparing ${a[j]} and ${a[j+1]}`});
+      if(a[j]>a[j+1]){
+        [a[j],a[j+1]]=[a[j+1],a[j]];
+        steps.push({array:[...a], highlight:{swap:[j,j+1]}, text:`Swapped ${a[j]} and ${a[j+1]}`});
+      }
+    }
+  }
+  steps.push({array:[...a], highlight:{}, text:"Array sorted ✔", sorted:true});
+  await runSteps();
+}
+
+// Selection Sort
+async function visualizeSelection(){
+  let a=[...array];
+  for(let i=0;i<a.length;i++){
+    let min=i;
+    for(let j=i+1;j<a.length;j++){
+      steps.push({array:[...a], highlight:{compare:[min,j]}, text:`Comparing ${a[min]} and ${a[j]}`});
+      if(a[j]<a[min]) min=j;
+    }
+    if(min!==i){
+      [a[i],a[min]]=[a[min],a[i]];
+      steps.push({array:[...a], highlight:{swap:[i,min]}, text:`Swapped ${a[i]} and ${a[min]}`});
+    }
+  }
+  steps.push({array:[...a], highlight:{}, text:"Array sorted ✔", sorted:true});
+  await runSteps();
+}
+
+// Insertion Sort
+async function visualizeInsertion(){
+  let a=[...array];
+  for(let i=1;i<a.length;i++){
+    let key=a[i], j=i-1;
+    while(j>=0 && a[j]>key){
+      steps.push({array:[...a], highlight:{compare:[j,j+1]}, text:`Comparing ${a[j]} and ${key}`});
+      a[j+1]=a[j];
+      steps.push({array:[...a], highlight:{swap:[j,j+1]}, text:`Moved ${a[j]} to position ${j+1}`});
+      j--;
+    }
+    a[j+1]=key;
+    steps.push({array:[...a], highlight:{}, text:`Inserted ${key} at position ${j+1}`});
+  }
+  steps.push({array:[...a], highlight:{}, text:"Array sorted ✔", sorted:true});
+  await runSteps();
+}
+
+// Quick Sort
+async function visualizeQuick(){ let a=[...array]; await quickSort(a,0,a.length-1); steps.push({array:[...a], highlight:{}, text:"Array sorted ✔", sorted:true}); await runSteps(); }
+async function quickSort(a,l,r){ if(l>=r) return; let pivot=a[r],i=l; for(let j=l;j<r;j++){ steps.push({array:[...a], highlight:{compare:[j,r]}, text:`Comparing ${a[j]} and pivot ${pivot}`}); if(a[j]<pivot){ [a[i],a[j]]=[a[j],a[i]]; steps.push({array:[...a], highlight:{swap:[i,j]}, text:`Swapped ${a[i]} and ${a[j]}`}); i++; } } [a[i],a[r]]=[a[r],a[i]]; steps.push({array:[...a], highlight:{swap:[i,r]}, text:`Swapped ${a[i]} and pivot ${pivot}`}); await quickSort(a,l,i-1); await quickSort(a,i+1,r); }
+
+// They remain exactly as your previous code
+
+// ----------------- Animated Merge Sort -----------------
+async function visualizeMerge(){
+  let a=[...array];
+  async function mergeSortAnim(a,l,r){
+    if(l>=r) return;
+    const m=Math.floor((l+r)/2);
+    await mergeSortAnim(a,l,m);
+    await mergeSortAnim(a,m+1,r);
+    let temp=[],i=l,j=m+1;
+    while(i<=m && j<=r){
+      steps.push({array:[...a], highlight:{compare:[i,j]}, text:`Comparing ${a[i]} and ${a[j]}`});
+      if(a[i]<=a[j]) temp.push(a[i++]);
+      else temp.push(a[j++]);
+    }
+    while(i<=m) temp.push(a[i++]);
+    while(j<=r) temp.push(a[j++]);
+    for(let k=l;k<=r;k++){
+      a[k]=temp[k-l];
+      steps.push({array:[...a], highlight:{swap:[k]}, text:`Placed ${a[k]} at position ${k}`});
+    }
+  }
+  await mergeSortAnim(a,0,a.length-1);
+  steps.push({array:[...a], highlight:{}, text:"Array sorted ✔", sorted:true});
+  await runSteps();
+}
+
+// ----------------- Animated Heap Sort -----------------
+async function visualizeHeap(){
+  let a=[...array];
+  async function heapify(a,n,i){
+    let largest=i,l=2*i+1,r=2*i+2;
+    if(l<n && a[l]>a[largest]) largest=l;
+    if(r<n && a[r]>a[largest]) largest=r;
+    if(largest!==i){
+      [a[i],a[largest]]=[a[largest],a[i]];
+      steps.push({array:[...a], highlight:{swap:[i,largest]}, text:`Heap swap ${a[i]} and ${a[largest]}`});
+      await heapify(a,n,largest);
+    }
+  }
+  for(let i=Math.floor(a.length/2)-1;i>=0;i--) await heapify(a,a.length,i);
+  for(let i=a.length-1;i>0;i--){
+    [a[0],a[i]]=[a[i],a[0]];
+    steps.push({array:[...a], highlight:{swap:[0,i]}, text:`Swapped ${a[0]} and ${a[i]}`});
+    await heapify(a,i,0);
+  }
+  steps.push({array:[...a], highlight:{}, text:"Array sorted ✔", sorted:true});
+  await runSteps();
+}
+
+// ----------------- Animated Radix Sort -----------------
+async function visualizeRadix(){
+  let a=[...array];
+  let max=Math.max(...a);
+  for(let exp=1;Math.floor(max/exp)>0;exp*=10){
+    let output=Array(a.length).fill(0); let count=Array(10).fill(0);
+    for(let i=0;i<a.length;i++) count[Math.floor(a[i]/exp)%10]++;
+    for(let i=1;i<10;i++) count[i]+=count[i-1];
+    for(let i=a.length-1;i>=0;i--){
+      let idx=Math.floor(a[i]/exp)%10;
+      output[count[idx]-1]=a[i];
+      count[idx]--;
+    }
+    for(let i=0;i<a.length;i++){
+      a[i]=output[i];
+      steps.push({array:[...a], highlight:{swap:[i]}, text:`Placed ${a[i]} at position ${i}`});
+    }
+  }
+  steps.push({array:[...a], highlight:{}, text:"Array sorted ✔", sorted:true});
+  await runSteps();
+}
+
+// ----------------- Animated Bucket Sort -----------------
+async function visualizeBucket(){
+  let a=[...array];
+  let max=Math.max(...a);
+  let size=Math.ceil(max/10)+1;
+  let buckets=Array.from({length:10},()=>[]);
+  a.forEach(v=>buckets[Math.floor(v/size)].push(v));
+  for(let b=0;b<buckets.length;b++){
+    buckets[b].sort((x,y)=>x-y);
+  }
+  let idx=0;
+  for(let b=0;b<buckets.length;b++){
+    for(let v of buckets[b]){
+      a[idx]=v;
+      steps.push({array:[...a], highlight:{swap:[idx]}, text:`Placed ${v} at position ${idx}`});
+      idx++;
+    }
+  }
+  steps.push({array:[...a], highlight:{}, text:"Array sorted ✔", sorted:true});
+  await runSteps();
+}
+</script>
+
 </body>
 </html>

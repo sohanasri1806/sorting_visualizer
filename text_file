@@ -1,0 +1,689 @@
+1. node filename.js
+
+2. npm init -y, npm install express
+Write code in server.js node server.js and test using thunder client 
+3. node filename.js
+4. Create files node app.js,food.html
+   Run node app.js
+5,6,7. Type mongosh in terminal and execute commands
+For 8,9,10
+Open vscode
+Create a folder 
+Create index.html
+And paste codes
+Run using live server 
+For 10, create employees.json also
+
+For 11
+npm init -y, npm install express 
+Create 2 files
+Index.html,server.js run node server.js
+
+For 12,13,14 and extra prog 
+check npm -v, node -v
+In terminal, click npx create-react-app demo
+cd demo
+In demo/src/App.js
+Replace App.js with your codes
+And run npm start
+
+
+
+==========cycle1============
+1. Create an application to setup node JS environment and display “Hello World”.
+create file hello.js
+console.log("Hello World");
+run node hello.js
+---------------------------
+2 . create a nodejs appn for user login system
+create file server.js
+paste this
+const express = require("express");
+const app = express();
+app.use(express.json());
+
+let users = [];
+
+// Register route
+app.post("/register", (req, res) => {
+    let { username, password } = req.body;
+    if (!username || !password) return res.send("All fields required");
+    if (users.find(u => u.username === username)) return res.send("User exists");
+    users.push({ username, password });
+    res.send("Registered");
+});
+
+// Login route
+app.post("/login", (req, res) => {
+    let { username, password } = req.body;
+    const user = users.find(u => u.username === username && u.password === password);
+    if (user)
+        res.send("Login successful");
+    else
+        res.send("Invalid credentials");
+});
+
+app.listen(3000, () => console.log("Server running on http://localhost:3000"));
+run node server.js and test using thunderclient
+--------------------------
+3.write a nodejs prog to perform file operations
+create a file named file.js
+paste this
+const fs = require("fs");
+
+// 1. Write file
+fs.writeFile("data.txt", "Hello Node.js File System!", (err) => {
+    if (err) {
+        console.log("Error writing file");
+        return;
+    }
+    console.log("File written successfully");
+
+    // 2. Read file
+    fs.readFile("data.txt", "utf8", (err, data) => {
+        if (err) {
+            console.log("Error reading file");
+            return;
+        }
+        console.log("\nFile content after write:");
+        console.log(data);
+
+        // 3. Append file
+        fs.appendFile("data.txt", "\nThis is appended text.", (err) => {
+            if (err) {
+                console.log("Error appending file");
+                return;
+            }
+            console.log("\nData appended successfully");
+
+            // 4. Read again after append
+            fs.readFile("data.txt", "utf8", (err, newData) => {
+                if (err) {
+                    console.log("Error reading file");
+                    return;
+                }
+                console.log("\nFile content after append:");
+                console.log(newData);
+
+                // 5. Rename file
+                fs.rename("data.txt", "newdata.txt", (err) => {
+                    if (err) {
+                        console.log("Error renaming file");
+                        return;
+                    }
+                    console.log("\nFile renamed successfully");
+                    console.log("New file name: newdata.txt");
+
+                    // 6. Delete file
+                    fs.unlink("newdata.txt", (err) => {
+                        if (err) {
+                            console.log("Error deleting file");
+                            return;
+                        }
+                        console.log("\nFile deleted successfully");
+                    });
+                });
+            });
+        });
+    });
+});
+run node file.js
+-----------------------------------
+4.food delivery website
+create file app.js
+const http = require("http");
+const fs = require("fs");
+
+http.createServer((req,res)=>{
+  if(req.url==="/"){
+    fs.readFile("food.html",(e,d)=>{
+      res.writeHead(200,{"Content-Type":"text/html"});
+      res.end(d);
+    });
+  }
+}).listen(3000);
+
+create file food.html
+<!DOCTYPE html>
+<html lang>
+<body>
+    <h3>Food Delivery</h3>
+    <input type="radio" name="r" onclick="showMenu('pizza')">Pizza Hut
+    <input type="radio" name="r" onclick="showMenu('kfc')">KFC
+    <input type="radio" name="r" onclick="showMenu('dominos')">Dominos
+    <br><br>
+    <div id="menu"></div>
+    <input type="text" id="food"placeholder="Enter Food item">
+    <br><br>
+    <button onclick="order()">Place Order</button>
+    <script>
+        function showMenu(type){
+            var menu=document.getElementById("menu");
+            if(type==="pizza"){
+                menu.innerHTML="Pizza Hut Menu:<br>Margherita - ₹199<br>Veg Supreme - ₹299<br>Cheese Burst - ₹349<br><br>";
+            }
+            else if(type==="kfc"){
+                menu.innerHTML="KFC Menu:<br>Fried Chicken - ₹249<br>Burger - ₹199<br>French Fries - ₹149<br><br>";
+            }
+            else if(type==="dominos"){
+                menu.innerHTML="Dominos Menu:<br>Veg Pizza - ₹199<br>Paneer Pizza - ₹299<br>Garlic Bread - ₹149<br><br>";
+            }
+        }
+        function order(){
+            var food=document.getElementById("food").value;
+            if(food!="")
+                alert("Order placed for "+food);
+        }
+    </script>
+
+    
+
+
+    
+</body>
+</html>
+run node app.js or run food.html using liveserver
+-----------------------------------------
+5.basic commands on databases and collections using mongodb
+1. Database Commands
+ View all databases
+show dbs
+ Create a new or switch databases
+use 235c5
+ View current database
+db
+ Delete current database
+db.dropDatabase()
+2. Collection Commands
+ Show collections
+show collections
+ Create a collection named 'students'
+db.createCollection('comments')
+
+ Drop a collection named 'students'
+db.students.drop()
+-------------------------------------
+6.crud operations using mongo db
+1. Sample Dataset (Students Collection)
+{
+"student_id": 101,
+"name": "Anita Sharma", "department": "Computer Science", "year": 3,
+"cgpa": 8.4
+}
+Database: collegeDB Collection: students
+2. Create Operation (Insert Data)
+a) Insert One Document use collegeDB
+db.students.insertOne({ student_id: 101, name: "Anita Sharma",
+department: "Computer Science", year: 3,
+cgpa: 8.4
+})
+b) Insert Multiple Documents db.students.insertMany([
+{
+student_id: 102,
+name: "Rahul Verma",
+department: "Information Technology", year: 2,
+cgpa: 7.9
+},
+{
+student_id: 103, name: "Neha Singh"
+department: "Computer Science", year: 4,
+cgpa: 9.1
+}
+]
+Documents are added to the students collection.
+3. Read Operation (Retrieve Data)
+a) Retrieve All Documents db.students.find()
+b) Retrieve with Condition
+db.students.find({ department: "Computer Science" })
+c) Retrieve Specific Fields (Projection) db.students.find(
+{ year: 3 },
+{ name: 1, cgpa: 1, _id: 0 }
+)
+d) Find One Document db.students.findOne({ student_id: 102 })
+4. Update Operation (Modify Data)
+a) Update One Document db.students.updateOne(
+{ student_id: 101 },
+{ $set: { cgpa: 8.8 } }
+)
+b) Update Multiple Documents db.students.updateMany(
+{ department: "Computer Science" },
+{ $set: { department: "CSE" } }
+)
+c) Increment a Field db.students.updateOne(
+{ student_id: 102 },
+{ $inc: { cgpa: 0.2 } }
+)
+db.students.find()
+5. Delete Operation (Remove Data)
+a) Delete One Document db.students.deleteOne({ student_id: 103 })
+b) Delete Multiple Documents
+db.students.deleteMany({ year: 2}
+c) Delete All Documents (Careful!)
+db.students.deleteMany({})
+db.students.find()
+------------------------------------
+7.perform count,limit,sort and skip operations using mongodb
+assume collections is students
+db.students.countDocuments()
+db.students.countDocuments({ department: "Computer Science" })
+
+db.students.find().limit(2)
+
+db.students.find().sort({ cgpa: 1 })
+db.students.find().sort({ cgpa: -1 })
+
+db.students.find().skip(1)
+
+=============cycle2=================
+▶️ Steps: (for 8,9,10)
+Open VS Code
+Create a folder (e.g., angular-apps)
+Create index.html (and employees.json for Q10)
+Paste your code
+run live server or type url in browser.
+
+8. Develop an angular JS form to apply CSS and Events.
+Code: index.html
+
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<style>
+form{display:flex;flex-direction:column;align-items:center; gap:6px;}
+</style>
+</head>
+<body ng-controller="ctrl">
+
+<form>
+<input ng-model="name" placeholder="Name" ng-focus="f=1" ng-blur="f=0" ng-class="{'highlight':f}">
+<br>
+<input ng-model="email" placeholder="Email">
+<br>
+<button ng-click="msg='Form Submitted by '+name">Submit</button>
+</form>
+
+<p>{{msg}}</p>
+
+<script>
+angular.module("app",[]).controller("ctrl", function($scope){});
+</script>
+
+</body>
+</html>
+-----------------------------------------
+9. Develop a Job Registration form and validate it using angular JS.
+
+Code : index.html
+
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<style>
+form{display:flex;flex-direction:column;align-items:center; gap: 10px;}
+</style>
+</head>
+<body ng-controller="ctrl">
+
+<form ng-submit="submit()">
+<input type="text" ng-model="name" placeholder="Name" required>
+<input type="email" ng-model="email" placeholder="Email" required>
+<select ng-model="position" required>
+<option value="" disabled selected>Select Position</option>
+<option>Developer</option>
+<option>Designer</option>
+<option>Tester</option>
+</select>
+<button type="submit">Register</button>
+</form>
+
+<p>{{msg}}</p>
+
+<script>
+angular.module("app",[]).controller("ctrl",function($scope){
+$scope.submit=function(){
+$scope.msg="Job Registered for "+$scope.name+" as "+$scope.position;
+};
+});
+</script>
+
+</body>
+</html>
+--------------------------------------
+10. Write an angular JS application to access JSON file data of an employee from a server
+using $http service.
+
+Code:
+1.Employees.json
+
+[
+  {"id":1, "name":"Hansini", "role":"Developer"},
+  {"id":2, "name":"Adifa", "role":"Designer"},
+  {"id":3, "name":"Yasasvi", "role":"Tester"}
+]
+
+2.index.html
+
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<style>
+table{margin:30px auto;border:1px solid #000;border-collapse:collapse;font-family:sans-serif;}
+th,td{border:1px solid #000;padding:5px;text-align:center;}
+</style>
+</head>
+<body ng-controller="ctrl">
+
+<h2 style="text-align:center;">Employee List</h2>
+<table>
+<tr><th>ID</th><th>Name</th><th>Role</th></tr>
+<tr ng-repeat="emp in employees">
+<td>{{emp.id}}</td>
+<td>{{emp.name}}</td>
+<td>{{emp.role}}</td>
+</tr>
+</table>
+
+<script>
+angular.module("app", [])
+.controller("ctrl", function($scope, $http) {
+  $http.get("employees.json").then(function(response) {
+    $scope.employees = response.data;
+  });
+});
+</script>
+
+</body>
+</html>
+------------------------------------------------
+11.Develop a web application to manage student information using Express and Angular
+JS
+
+first run below commands:
+npm init -y
+npm install express
+then package.json gets generated
+then create 2 files index.html, server.js , paste the codes and type below command:
+node server.js
+check output in browser
+
+Code:
+Server.js
+
+const express = require("express");
+const app = express();
+
+app.use(express.json());
+app.use(express.static("public")); // serve frontend files
+
+let students = [
+  { id: 1, name: "Hansini", course: "CSE" },
+  { id: 2, name: "Adifa", course: "ECE" }
+];
+
+app.get("/students", (req, res) => {
+  res.json(students);
+});
+
+app.post("/students", (req, res) => {
+  let s = req.body;
+  s.id = students.length + 1;
+  students.push(s);
+  res.json({ message: "Added" });
+});
+
+app.listen(3000);
+
+index.html
+<!DOCTYPE html>
+<html ng-app>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<style>
+body{text-align:center;margin-top:30px;font-family:sans-serif;}
+input,button{margin:5px;padding:5px;}
+table{margin:20px auto;border-collapse:collapse;}
+th,td{border:1px solid #000;padding:5px;}
+</style>
+</head>
+<body>
+
+<h2>Student List</h2>
+<table>
+<tr><th>ID</th><th>Name</th><th>Course</th></tr>
+<tr ng-repeat="s in students">
+<td>{{$index + 1}}</td>
+<td>{{s.name}}</td>
+<td>{{s.course}}</td>
+</tr>
+</table>
+
+<h3>Add Student</h3>
+<input ng-model="newName" placeholder="Name">
+<input ng-model="newCourse" placeholder="Course">
+<button ng-click="students = (students || []).concat({name:newName, course:newCourse}); newName=''; newCourse=''">Add</button>
+
+</body>
+</html>
+
+
+
+
+manya 
+index.js
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+<body ng-controller="myCtrl">
+
+<h2>Student List</h2>
+
+<button ng-click="load()">Load Students</button>
+
+<ul>
+  <li ng-repeat="s in students">
+    {{s.name}} - {{s.age}}
+  </li>
+</ul>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+<script>
+angular.module("myApp", [])
+.controller("myCtrl", function($scope, $http){
+
+  $scope.load = function(){
+    $http.get("http://localhost:3000/students")
+    .then(function(res){
+      $scope.students = res.data;
+    });
+  };
+
+});
+</script>
+
+</body>
+</html>
+
+server.js
+
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+app.use(cors()); // IMPORTANT
+
+app.get("/students", (req, res) => {
+  res.json([
+    { name: "Ram", age: 20 },
+    { name: "Sita", age: 21 }
+  ]);
+});
+
+app.listen(3000);
+
+-----------------------------------------------
+For any react application first check 
+npm -v
+node -v
+if versions are displayed then,
+npx create-react-app demo
+cd demo
+ paste codes in App.js
+then run 
+npm start
+check output in browser
+------------------------------------------------
+12. Write a program to create a voting application using React JS
+
+Code : App.js
+
+import React, { useState } from "react";
+
+function App() {
+  const [hansini, setHansini] = useState(0);
+  const [yasasvi, setYasasvi] = useState(0);
+  const [adifa, setAdifa] = useState(0);
+
+  const maxVotes = Math.max(hansini, yasasvi, adifa);
+  let winner = maxVotes === 0 ? "No votes yet" :
+               maxVotes === hansini ? "Hansini" :
+               maxVotes === yasasvi ? "Yasasvi" : "Adifa";
+
+  return (
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h1>Simple Counter App</h1>
+      <h2>Winner: {winner} ({maxVotes})</h2>
+
+      <h3>Hansini Votes: {hansini}</h3>
+      <button onClick={() => setHansini(hansini + 1)}>Vote Hansini</button>
+
+      <h3>Yasasvi Votes: {yasasvi}</h3>
+      <button onClick={() => setYasasvi(yasasvi + 1)}>Vote Yasasvi</button>
+
+      <h3>Adifa Votes: {adifa}</h3>
+      <button onClick={() => setAdifa(adifa + 1)}>Vote Adifa</button>
+    </div>
+  );
+}
+
+export default App;
+----------------------------------------------
+13. Develop a leave management system for an organization where users can apply different types of
+leaves such as casual leave and medical leave. They also can view the available number of days
+using react application.
+
+Code : App.js
+
+import React, { useState } from "react";
+
+function App() {
+  const [casualLeave, setCasualLeave] = useState(10);
+  const [medicalLeave, setMedicalLeave] = useState(8);
+  const [clDays, setClDays] = useState("");
+  const [mlDays, setMlDays] = useState("");
+
+  const applyCL = () => clDays>0 && clDays<=casualLeave ? (setCasualLeave(casualLeave-clDays), setClDays("")) : alert("Invalid CL");
+  const applyML = () => mlDays>0 && mlDays<=medicalLeave ? (setMedicalLeave(medicalLeave-mlDays), setMlDays("")) : alert("Invalid ML");
+  const resetLeaves = () => (setCasualLeave(10), setMedicalLeave(8));
+
+  return (
+    <div style={{textAlign:"center", marginTop:50}}>
+      <h1>Leave Management</h1>
+      <h2>Casual Leave: {casualLeave}</h2>
+      <input type="number" value={clDays} onChange={e=>setClDays(Number(e.target.value))}/>
+      <button onClick={applyCL}>Apply CL</button>
+
+      <h2>Medical Leave: {medicalLeave}</h2>
+      <input type="number" value={mlDays} onChange={e=>setMlDays(Number(e.target.value))}/>
+      <button onClick={applyML}>Apply ML</button>
+
+      <br/><br/>
+      <button onClick={resetLeaves}>Reset</button>
+    </div>
+  );
+}
+
+export default App;
+---------------------------------------
+14.music store application
+import React,{useState} from "react";
+import {BrowserRouter,Routes,Route,Link} from "react-router-dom";
+
+export default function App(){
+  const [cart,setCart]=useState([]),[msg,setMsg]=useState("");
+  const songs=["Song 1","Song 2"];
+
+  return(
+    <BrowserRouter>
+      <div style={{textAlign:"center",marginTop:"100px"}}>
+        <Link to="/">Home</Link> | <Link to="/songs">Songs</Link> | <Link to="/cart">Cart</Link>
+
+        <Routes>
+          <Route path="/" element={<h2>Music Store 🎵</h2>}/>
+
+          <Route path="/songs" element={
+            <>
+              {songs.map((s,i)=>
+                <div key={i}>{s}
+                  <button onClick={()=>{setCart([...cart,s]);setMsg(s+" added")}}>Add</button>
+                </div>
+              )}
+              <p>{msg}</p>
+            </>
+          }/>
+
+          <Route path="/cart" element={<h3>{cart.join(", ")||"Empty"}</h3>}/>
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
+}
+-----------------------------------------------------
+EXTRA PROG
+Write a program to create a simple calculator Application using React JS.
+
+Code : App.js
+
+import React, { useState } from "react";
+
+function App() {
+  const [input, setInput] = useState("");
+
+  const handleClick = (val) => setInput(input + val);
+  const calculate = () => setInput(eval(input).toString());
+  const clear = () => setInput("");
+
+  return (
+    <div style={{ textAlign: "center", marginTop: 30 }}>
+      <h1>Calculator</h1>
+      <input type="text" value={input} readOnly />
+      <br /><br />
+      <button onClick={() => handleClick("7")}>7</button>
+      <button onClick={() => handleClick("8")}>8</button>
+      <button onClick={() => handleClick("9")}>9</button>
+      <button onClick={() => handleClick("/")}>/</button>
+      <br />
+      <button onClick={() => handleClick("4")}>4</button>
+      <button onClick={() => handleClick("5")}>5</button>
+      <button onClick={() => handleClick("6")}>6</button>
+      <button onClick={() => handleClick("*")}>*</button>
+      <br />
+      <button onClick={() => handleClick("1")}>1</button>
+      <button onClick={() => handleClick("2")}>2</button>
+      <button onClick={() => handleClick("3")}>3</button>
+      <button onClick={() => handleClick("-")}>-</button>
+      <br />
+      <button onClick={() => handleClick("0")}>0</button>
+      <button onClick={() => handleClick(".")}>.</button>
+      <button onClick={calculate}>=</button>
+      <button onClick={() => handleClick("+")}>+</button>
+      <br /><br />
+      <button onClick={clear}>C</button>
+    </div>
+  );
+}
+
+export default App;

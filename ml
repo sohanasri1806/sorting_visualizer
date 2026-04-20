@@ -197,6 +197,7 @@ for row in data:
 
 print("Final Hypothesis:", h)
 ------------------------------------------------------------
+====cycle 2=====
 5a. Perform simple linear regression 
 FOR CUSTOM DATASET
 import pandas as pd
@@ -290,6 +291,7 @@ plt.ylabel("Predicted Price")
 plt.title("Multiple Linear Regression - House Price Prediction")
 plt.show()
 --------------------------------------------
+6.Decision Tree
 # STEP 1: Import required libraries
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -381,36 +383,33 @@ plt.ylabel("Predicted")
 plt.title("Rainfall Prediction")
 plt.show()
 --------------------------------------
-9.Write a program to implement K-Means algorithm for clustering Mallcustomers (Mallcustomers.csv)
-# STEP 1: Import required libraries
+9.K-means Algorithm 
 import pandas as pd
-import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 
-# STEP 2: Load dataset
-df = pd.read_csv("mallcustomers.csv")
+# load dataset
+df = pd.read_csv("Mall_Customers.csv")
 
-# STEP 3: Display columns
-print("Columns in dataset:")
-print(df.columns)
-print()
+# select features
+X = df[['Annual Income (k$)', 'Spending Score (1-100)']]
 
-# STEP 4: Select features for clustering
-X = df[['Income', 'SpendingScore']]
+# model
+model = KMeans(n_clusters=3, random_state=42)
+model.fit(X)
 
-# STEP 5: Apply K-Means algorithm
-kmeans = KMeans(n_clusters=3, random_state=0)
-df['Cluster'] = kmeans.fit_predict(X)
+# add cluster labels
+df['Cluster'] = model.labels_
 
-# STEP 6: Display clustered data
-print(df[['Income', 'SpendingScore', 'Cluster']].head(20))
-
-# STEP 7: Plot clusters
-plt.scatter(X['Income'], X['SpendingScore'], c=df['Cluster'])
+# plot
+# //all rows of 0th col,1st col
+plt.scatter(X.iloc[:,0], X.iloc[:,1], c=model.labels_)
 plt.xlabel("Income")
 plt.ylabel("Spending Score")
-plt.title("K-Means Clustering of Mall Customers")
 plt.show()
+#optional
+from sklearn.metrics import silhouette_score
+print("Score:", silhouette_score(X, model.labels_))
 ---------------------------------------------
 
 10.Build a Multi-Layer Perceptron (MLP) neural network model for Regression using Keras
@@ -493,3 +492,145 @@ accuracy = accuracy_score(y, y_pred)
 
 print("Predicted values:", y_pred)
 print("Accuracy:", accuracy)
+------------------------------------------
+Extra programs
+
+ *1. Single Layer Perceptron (AND & OR)*
+
+*Code :*
+
+ import numpy as np
+
+# Step activation function
+def step(x):
+    return 1 if x >= 0 else 0
+
+# Inputs
+X = np.array([
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+])
+
+print("AND Gate:")
+for x in X:
+    y = step(1*x[0] + 1*x[1] - 1.5)   # weights = 1,1  bias = -1.5
+    print(x, "->", y)
+
+print("\nOR Gate:")
+for x in X:
+    y = step(1*x[0] + 1*x[1] - 0.5)   # weights = 1,1  bias = -0.5
+    print(x, "->", y)
+
+ *2. Multi-Layer Perceptron (AND, OR, XOR)*
+
+ *Code:*
+    
+    import numpy as np
+
+# Step function
+def step(x):
+    return 1 if x >= 1 else 0
+
+# Inputs
+X = np.array([
+    [0,0],
+    [0,1],
+    [1,0],
+    [1,1]
+])
+
+print("MLP Outputs:\n")
+
+for x in X:
+    a, b = x
+
+    # Hidden layer
+    h1 = step(a + b)        # OR
+    h2 = step(2 - (a + b))  # NAND
+
+    # Output layer
+    and_out = step(a + b - 1.5)
+    or_out = step(a + b - 0.5)
+    xor_out = step(h1 + h2 - 1.5)
+
+    print("Input:", x)
+    print("AND :", and_out)
+    print("OR  :", or_out)
+    print("XOR :", xor_out)
+    print()
+
+
+# Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load dataset (change file name)
+df = pd.read_csv("your_file.csv")
+
+# Select columns (change based on your dataset)
+x = df.columns[0]
+y = df.columns[1]
+
+# -------------------------------
+# 1️⃣ SCATTER PLOT
+# -------------------------------
+# Shows relationship between two variables
+plt.figure()
+plt.scatter(df[x], df[y])
+plt.xlabel(x)
+plt.ylabel(y)
+plt.title("Scatter Plot")
+plt.show()
+
+# -------------------------------
+# 2️⃣ LINE PLOT
+# -------------------------------
+# Shows trend over data
+plt.figure()
+plt.plot(df[x], df[y])
+plt.xlabel(x)
+plt.ylabel(y)
+plt.title("Line Plot")
+plt.show()
+
+# -------------------------------
+# 3️⃣ BAR GRAPH
+# -------------------------------
+# Shows frequency/count of categories
+plt.figure()
+df[x].value_counts().plot(kind='bar')
+plt.xlabel(x)
+plt.ylabel("Count")
+plt.title("Bar Graph")
+plt.show()
+
+# -------------------------------
+# 4️⃣ HISTOGRAM
+# -------------------------------
+# Shows distribution of values
+plt.figure()
+plt.hist(df[x])
+plt.xlabel(x)
+plt.ylabel("Frequency")
+plt.title("Histogram")
+plt.show()
+
+# -------------------------------
+# 5️⃣ PIE CHART
+# -------------------------------
+# Shows percentage distribution
+plt.figure()
+df[x].value_counts().plot(kind='pie')
+plt.title("Pie Chart")
+plt.show()
+
+# -------------------------------
+# 6️⃣ BOX PLOT
+# -------------------------------
+# Shows spread + outliers
+plt.figure()
+plt.boxplot(df[x])
+plt.title("Box Plot")
+plt.show()

@@ -121,34 +121,38 @@ else:
     6. 8- PUZZLE PROBLEM
 from collections import deque
 
-start = ((1,2,3),
-         (4,0,6),
-         (7,5,8))
+goal = [[1,2,3],[4,5,6],[7,8,0]]
 
-goal = ((1,2,3),
-        (4,5,6),
-        (7,8,0))
+def solve(start):
+    q = deque([start])
+    seen = []
 
-q = deque([start])
-visited = set([start])
+    while q:
+        s = q.popleft()
+        if s == goal:
+            print("Solved:", s)
+            return
 
-while q:
-    s = q.popleft()
-    if s == goal:
-        print("Goal reached")
-        break
+        seen.append(s)
 
-    i, j = [(i,j) for i in range(3) for j in range(3) if s[i][j]==0][0]
+        for i in range(3):
+            for j in range(3):
+                if s[i][j] == 0:
+                    x,y = i,j
 
-    for x,y in [(-1,0),(1,0),(0,-1),(0,1)]:
-        ni, nj = i+x, j+y
-        if 0 <= ni < 3 and 0 <= nj < 3:
-            t = [list(r) for r in s]
-            t[i][j], t[ni][nj] = t[ni][nj], t[i][j]
-            t = tuple(tuple(r) for r in t)
-            if t not in visited:
-                visited.add(t)
-                q.append(t)
+        for dx,dy in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nx,ny = x+dx,y+dy
+            if 0<=nx<3 and 0<=ny<3:
+                n = [r[:] for r in s]
+                n[x][y], n[nx][ny] = n[nx][ny], n[x][y]
+                if n not in seen:
+                    q.append(n)
+
+start = [[1,2,3],
+         [4,0,6],
+         [7,5,8]]
+
+solve(start)
   ---------------------------------------------
   7. water jug
   from collections import deque
@@ -270,24 +274,25 @@ print("Result:", alphabeta(0, 0, True, values, -999, 999))
 12. 8 queeens problem
 N = 8
 
-def safe(board, row, col):
-    for i in range(row):
-        if board[i] == col or abs(board[i] - col) == abs(i - row):
-            return False
-    return True
-
-def solve(board, row):
+def solve(row, board):
     if row == N:
         print(board)
         return True
 
     for col in range(N):
-        if safe(board, row, col):
+        ok = True
+        for i in range(row):
+            if board[i] == col or abs(board[i] - col) == abs(i - row):
+                ok = False
+                break
+        
+        if ok:
             board[row] = col
-            if solve(board, row + 1):
+            if solve(row + 1, board):
                 return True
+
     return False
 
 board = [-1] * N
-solve(board, 0)
+solve(0, board)
 -------------------------------------------------------

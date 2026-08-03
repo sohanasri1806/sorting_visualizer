@@ -1,0 +1,430 @@
+*ADDITIONAL PROGRAMS*
+
+1.VOWEL COUNT 
+
+%{
+#include <stdio.h>
+int a=0,e=0,i=0,o=0,u=0,total=0;
+%}
+
+%%
+[aA] { a++; total++; }
+[eE] { e++; total++; }
+[iI] { i++; total++; }
+[oO] { o++; total++; }
+[uU] { u++; total++; }
+
+\n {
+    printf("\nNumber of vowels = %d\n", total);
+    printf("a=%d\n",a);
+    printf("e=%d\n",e);
+    printf("i=%d\n",i);
+    printf("o=%d\n",o);
+    printf("u=%d\n",u);
+}
+
+.   ;
+%%
+
+int yywrap() { return 1; }
+
+int main() {
+    printf("Enter a string: ");
+    yylex();
+}
+
+
+2.POSITIVE AND NEGATIVE NUMBER 
+
+%{
+#include<stdio.h>
+#include<stdlib.h>
+%}
+
+%%
+
+-?[0-9]+
+{
+    int n = atoi(yytext);
+
+    if(n > 0)
+        printf("Positive Integer\n");
+    else if(n < 0)
+        printf("Negative Integer\n");
+    else
+        printf("Zero\n");
+}
+
+[ \t\n]+   ;
+
+.   { printf("Invalid Input\n"); }
+
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    printf("Enter an integer:\n");
+    yylex();
+    return 0;
+}
+
+
+3.PATTERN MATCHING
+
+%{
+#include<stdio.h>
+
+int abc = 0, xyz = 0, pqr = 0;
+%}
+
+%%
+
+abc { abc++; }
+
+xyz { xyz++; }
+
+pqr { pqr++; }
+
+[ \t\n]+ ;
+
+. ;
+
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    printf("Enter text:\n");
+    yylex();
+
+    printf("\nPattern abc found %d %s\n",
+           abc, (abc==1) ? "time" : "times");
+
+    printf("Pattern xyz found %d %s\n",
+           xyz, (xyz==1) ? "time" : "times");
+
+    printf("Pattern pqr found %d %s\n",
+           pqr, (pqr==1) ? "time" : "times");
+
+    return 0;
+}
+
+*LAB PROGRAMS*
+
+1ST 
+
+#include<stdio.h>
+#include<string.h>
+
+struct Symbol
+{
+    char name[20];
+    char type[20];
+    int value;
+};
+
+int main()
+{
+    struct Symbol table[100];
+    int n, i;
+
+    printf("Enter number of symbols: ");
+    scanf("%d", &n);
+
+    for(i = 0; i < n; i++)
+    {
+        printf("\nEnter Symbol Name: ");
+        scanf("%s", table[i].name);
+
+        printf("Enter Data Type: ");
+        scanf("%s", table[i].type);
+
+        printf("Enter Value: ");
+        scanf("%d", &table[i].value);
+    }
+
+    printf("\nSYMBOL TABLE\n");
+    printf("Name\tType\tValue\n");
+
+    for(i = 0; i < n; i++)
+    {
+        printf("%s\t%s\t%d\n",
+               table[i].name,
+               table[i].type,
+               table[i].value);
+    }
+
+    return 0;
+}
+
+
+3RD
+
+%{
+#include<stdio.h>
+%}
+
+ID      [a-zA-Z][a-zA-Z0-9]*
+OP      [+\-*/=%]
+SPEC    [.,;:(){}[\]]
+
+%%
+
+{ID}    
+{
+    printf("%s\t: Identifier\n", yytext);
+}
+
+{OP}    
+{
+    printf("%s\t: Operator\n", yytext);
+}
+
+{SPEC}  
+{
+    printf("%s\t: Special Symbol\n", yytext);
+}
+
+[ \t\n]+ ;
+
+.
+{
+    printf("%s\t: Unknown\n", yytext);
+}
+
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    yylex();
+    return 0;
+}
+
+4TH
+
+%{
+#include<stdio.h>
+
+int lines = 0, words = 0;
+%}
+
+%%
+
+[ \t]+ ;
+
+\n { lines++; }
+
+[^ \t\n]+ { words++; }
+
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    printf("Enter the text (Press Ctrl+D to end input):\n");
+
+    yylex();
+
+    if(words > 0 && lines == 0)
+        lines = 1;
+    else if(words > 0)
+        lines++;
+
+    printf("\nNumber of lines = %d\n", lines);
+    printf("Number of words = %d\n", words);
+
+    return 0;
+}
+
+11a.
+#include <stdio.h>
+#include <string.h>
+
+char input[100];
+int i = 0;
+int error = 0;
+
+void E();
+void T();
+void F();
+
+void E()
+{
+    T();
+
+    while(input[i] == '+')
+    {
+        i++;
+        T();
+    }
+}
+
+void T()
+{
+    F();
+
+    while(input[i] == '*')
+    {
+        i++;
+        F();
+    }
+}
+
+void F()
+{
+    if(input[i] == 'a')
+    {
+        i++;
+    }
+    else if(input[i] == '(')
+    {
+        i++;
+        E();
+
+        if(input[i] == ')')
+            i++;
+        else
+            error = 1;   // Missing closing bracket
+    }
+    else
+    {
+        error = 1;       // Invalid symbol
+    }
+}
+
+int main()
+{
+
+    printf("Enter expression: ");
+    scanf("%s", input);
+
+    E();
+
+    if(error == 0 && input[i] == '\0')
+        printf("Valid Expression\n");
+    else
+        printf("Invalid Expression\n");
+
+    return 0;
+}
+11b.
+#include <stdio.h>
+
+char input[100];
+int i = 0;
+int error = 0;
+
+void S();
+void L();
+
+void S()
+{
+    if(input[i] == 'a')
+    {
+        i++;
+    }
+    else if(input[i] == '(')
+    {
+        i++;
+
+        L();
+
+        if(input[i] == ')')
+            i++;
+        else
+            error = 1;
+    }
+    else
+    {
+        error = 1;
+    }
+}
+
+void L()
+{
+    S();
+
+    while(input[i] == ',')
+    {
+        i++;
+        S();
+    }
+}
+
+int main()
+{
+    printf("Enter string: ");
+    scanf("%s", input);
+
+    S();
+
+    if(error == 0 && input[i] == '\0')
+        printf("Valid String\n");
+    else
+        printf("Invalid String\n");
+
+    return 0;
+}
+2.
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int main()
+{
+    char token[20];
+    int len;
+
+    printf("Enter statement: ");
+
+    while(scanf("%s", token) != EOF)
+    {
+        len = strlen(token);
+
+        if(token[len-1] == ';')
+        {
+            token[len-1] = '\0';   // Remove ';'
+        }
+
+        if(strcmp(token,"int")==0 || strcmp(token,"float")==0 ||
+           strcmp(token,"char")==0 || strcmp(token,"double")==0)
+            printf("%s - Keyword\n", token);
+
+        else if(isalpha(token[0]))
+            printf("%s - Identifier\n", token);
+
+        else if(isdigit(token[0]))
+            printf("%s - Constant\n", token);
+
+        else if(strcmp(token,"+")==0 || strcmp(token,"-")==0 ||
+                strcmp(token,"*")==0 || strcmp(token,"/")==0 ||
+                strcmp(token,"=")==0)
+            printf("%s - Operator\n", token);
+
+        if(len > 0 && token[len-1] == '\0')
+        {
+            printf("; - Special Symbol\n");
+            break;
+        }
+    }
+
+    return 0;
+}

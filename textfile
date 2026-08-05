@@ -1,430 +1,493 @@
-*ADDITIONAL PROGRAMS*
-
-1.VOWEL COUNT 
-
-%{
-#include <stdio.h>
-int a=0,e=0,i=0,o=0,u=0,total=0;
-%}
-
-%%
-[aA] { a++; total++; }
-[eE] { e++; total++; }
-[iI] { i++; total++; }
-[oO] { o++; total++; }
-[uU] { u++; total++; }
-
-\n {
-    printf("\nNumber of vowels = %d\n", total);
-    printf("a=%d\n",a);
-    printf("e=%d\n",e);
-    printf("i=%d\n",i);
-    printf("o=%d\n",o);
-    printf("u=%d\n",u);
-}
-
-.   ;
-%%
-
-int yywrap() { return 1; }
-
-int main() {
-    printf("Enter a string: ");
-    yylex();
-}
-
-
-2.POSITIVE AND NEGATIVE NUMBER 
-
-%{
-#include<stdio.h>
-#include<stdlib.h>
-%}
-
-%%
-
--?[0-9]+
-{
-    int n = atoi(yytext);
-
-    if(n > 0)
-        printf("Positive Integer\n");
-    else if(n < 0)
-        printf("Negative Integer\n");
-    else
-        printf("Zero\n");
-}
-
-[ \t\n]+   ;
-
-.   { printf("Invalid Input\n"); }
-
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main()
-{
-    printf("Enter an integer:\n");
-    yylex();
-    return 0;
-}
-
-
-3.PATTERN MATCHING
-
-%{
-#include<stdio.h>
-
-int abc = 0, xyz = 0, pqr = 0;
-%}
-
-%%
-
-abc { abc++; }
-
-xyz { xyz++; }
-
-pqr { pqr++; }
-
-[ \t\n]+ ;
-
-. ;
-
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main()
-{
-    printf("Enter text:\n");
-    yylex();
-
-    printf("\nPattern abc found %d %s\n",
-           abc, (abc==1) ? "time" : "times");
-
-    printf("Pattern xyz found %d %s\n",
-           xyz, (xyz==1) ? "time" : "times");
-
-    printf("Pattern pqr found %d %s\n",
-           pqr, (pqr==1) ? "time" : "times");
-
-    return 0;
-}
-
-*LAB PROGRAMS*
-
-1ST 
-
-#include<stdio.h>
-#include<string.h>
-
-struct Symbol
-{
-    char name[20];
-    char type[20];
-    int value;
-};
-
-int main()
-{
-    struct Symbol table[100];
-    int n, i;
-
-    printf("Enter number of symbols: ");
-    scanf("%d", &n);
-
-    for(i = 0; i < n; i++)
-    {
-        printf("\nEnter Symbol Name: ");
-        scanf("%s", table[i].name);
-
-        printf("Enter Data Type: ");
-        scanf("%s", table[i].type);
-
-        printf("Enter Value: ");
-        scanf("%d", &table[i].value);
-    }
-
-    printf("\nSYMBOL TABLE\n");
-    printf("Name\tType\tValue\n");
-
-    for(i = 0; i < n; i++)
-    {
-        printf("%s\t%s\t%d\n",
-               table[i].name,
-               table[i].type,
-               table[i].value);
-    }
-
-    return 0;
-}
-
-
-3RD
-
-%{
-#include<stdio.h>
-%}
-
-ID      [a-zA-Z][a-zA-Z0-9]*
-OP      [+\-*/=%]
-SPEC    [.,;:(){}[\]]
-
-%%
-
-{ID}    
-{
-    printf("%s\t: Identifier\n", yytext);
-}
-
-{OP}    
-{
-    printf("%s\t: Operator\n", yytext);
-}
-
-{SPEC}  
-{
-    printf("%s\t: Special Symbol\n", yytext);
-}
-
-[ \t\n]+ ;
-
-.
-{
-    printf("%s\t: Unknown\n", yytext);
-}
-
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main()
-{
-    yylex();
-    return 0;
-}
-
-4TH
-
-%{
-#include<stdio.h>
-
-int lines = 0, words = 0;
-%}
-
-%%
-
-[ \t]+ ;
-
-\n { lines++; }
-
-[^ \t\n]+ { words++; }
-
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main()
-{
-    printf("Enter the text (Press Ctrl+D to end input):\n");
-
-    yylex();
-
-    if(words > 0 && lines == 0)
-        lines = 1;
-    else if(words > 0)
-        lines++;
-
-    printf("\nNumber of lines = %d\n", lines);
-    printf("Number of words = %d\n", words);
-
-    return 0;
-}
-
-11a.
-#include <stdio.h>
-#include <string.h>
-
-char input[100];
-int i = 0;
-int error = 0;
-
-void E();
-void T();
-void F();
-
-void E()
-{
-    T();
-
-    while(input[i] == '+')
-    {
-        i++;
-        T();
-    }
-}
-
-void T()
-{
-    F();
-
-    while(input[i] == '*')
-    {
-        i++;
-        F();
-    }
-}
-
-void F()
-{
-    if(input[i] == 'a')
-    {
-        i++;
-    }
-    else if(input[i] == '(')
-    {
-        i++;
-        E();
-
-        if(input[i] == ')')
-            i++;
-        else
-            error = 1;   // Missing closing bracket
-    }
-    else
-    {
-        error = 1;       // Invalid symbol
-    }
-}
-
-int main()
-{
-
-    printf("Enter expression: ");
-    scanf("%s", input);
-
-    E();
-
-    if(error == 0 && input[i] == '\0')
-        printf("Valid Expression\n");
-    else
-        printf("Invalid Expression\n");
-
-    return 0;
-}
-11b.
-#include <stdio.h>
-
-char input[100];
-int i = 0;
-int error = 0;
-
-void S();
-void L();
-
-void S()
-{
-    if(input[i] == 'a')
-    {
-        i++;
-    }
-    else if(input[i] == '(')
-    {
-        i++;
-
-        L();
-
-        if(input[i] == ')')
-            i++;
-        else
-            error = 1;
-    }
-    else
-    {
-        error = 1;
-    }
-}
-
-void L()
-{
-    S();
-
-    while(input[i] == ',')
-    {
-        i++;
-        S();
-    }
-}
-
-int main()
-{
-    printf("Enter string: ");
-    scanf("%s", input);
-
-    S();
-
-    if(error == 0 && input[i] == '\0')
-        printf("Valid String\n");
-    else
-        printf("Invalid String\n");
-
-    return 0;
-}
-2.
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-
-int main()
-{
-    char token[20];
-    int len;
-
-    printf("Enter statement: ");
-
-    while(scanf("%s", token) != EOF)
-    {
-        len = strlen(token);
-
-        if(token[len-1] == ';')
-        {
-            token[len-1] = '\0';   // Remove ';'
+1. Write a program that contains a string (char pointer) with a value ‘Hello world’. The program should XOR and AND each character in this string with 0 and 127, and display the result.
+public class XorAnd {
+    public static void main(String[] args) {
+        String str = "Hello World";
+        System.out.println("Original: " + str);
+        System.out.print("XOR with 0: ");
+        for (int i = 0; i < str.length(); i++) {
+            System.out.print((char)(str.charAt(i) ^ 0));
         }
-
-        if(strcmp(token,"int")==0 || strcmp(token,"float")==0 ||
-           strcmp(token,"char")==0 || strcmp(token,"double")==0)
-            printf("%s - Keyword\n", token);
-
-        else if(isalpha(token[0]))
-            printf("%s - Identifier\n", token);
-
-        else if(isdigit(token[0]))
-            printf("%s - Constant\n", token);
-
-        else if(strcmp(token,"+")==0 || strcmp(token,"-")==0 ||
-                strcmp(token,"*")==0 || strcmp(token,"/")==0 ||
-                strcmp(token,"=")==0)
-            printf("%s - Operator\n", token);
-
-        if(len > 0 && token[len-1] == '\0')
-        {
-            printf("; - Special Symbol\n");
-            break;
+        System.out.print("\nAND with 127: ");
+        for (int i = 0; i < str.length(); i++) {
+            System.out.print((char)(str.charAt(i) & 127));
         }
     }
+}
 
-    return 0;
+2a. Caeser Cipher
+import java.util.Scanner;
+
+public class CaesarCipher {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter text (UPPERCASE): ");
+        String text = sc.next();
+
+        System.out.print("Enter key: ");
+        int key = sc.nextInt();
+
+        String enc = "";
+        String dec = "";
+
+        for(int i=0;i<text.length();i++)
+        {
+            char ch = text.charAt(i);
+
+            enc += (char)((ch-'A'+key)%26+'A');
+        }
+
+        System.out.println("Encrypted : "+enc);
+
+        for(int i=0;i<enc.length();i++)
+        {
+            char ch = enc.charAt(i);
+
+            dec += (char)((ch-'A'-key+26)%26+'A');
+        }
+
+        System.out.println("Decrypted : "+dec);
+    }
+}
+
+2b. Hill Cipher
+
+import java.util.Scanner;
+
+public class HillCipher {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        // Encryption key
+        int key[][] = {
+                {3, 3},
+                {2, 5}
+        };
+
+        // Inverse key matrix (mod 26)
+        int invKey[][] = {
+                {15, 17},
+                {20, 9}
+        };
+
+        System.out.print("Enter Plain Text (UPPERCASE): ");
+        String text = sc.next().toUpperCase();
+
+        // Make length even
+        if (text.length() % 2 != 0)
+            text += "X";
+
+        String cipher = "";
+
+        // ---------- Encryption ----------
+        for (int i = 0; i < text.length(); i += 2) {
+
+            int a = text.charAt(i) - 'A';
+            int b = text.charAt(i + 1) - 'A';
+
+            int c = (key[0][0] * a + key[0][1] * b) % 26;
+            int d = (key[1][0] * a + key[1][1] * b) % 26;
+
+            cipher += (char) (c + 'A');
+            cipher += (char) (d + 'A');
+        }
+
+        System.out.println("Encrypted Text : " + cipher);
+
+        // ---------- Decryption ----------
+        String plain = "";
+
+        for (int i = 0; i < cipher.length(); i += 2) {
+
+            int c = cipher.charAt(i) - 'A';
+            int d = cipher.charAt(i + 1) - 'A';
+
+            int a = (invKey[0][0] * c + invKey[0][1] * d) % 26;
+            int b = (invKey[1][0] * c + invKey[1][1] * d) % 26;
+
+            plain += (char) (a + 'A');
+            plain += (char) (b + 'A');
+        }
+
+        System.out.println("Decrypted Text : " + plain);
+    }
+}
+
+3a. DES algorithm
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.util.Base64;
+import java.util.*;
+public class DESExample {
+
+    public static void main(String[] args) throws Exception {
+
+        Scanner sc=new Scanner(System.in);
+        // Generate DES Key
+        KeyGenerator keyGen = KeyGenerator.getInstance("DES");
+        SecretKey key = keyGen.generateKey();
+
+        // Create Cipher
+        Cipher cipher = Cipher.getInstance("DES");
+
+        System.out.print("Enter string: ");
+        String plainText = sc.next();
+
+        // Encryption
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encrypted = cipher.doFinal(plainText.getBytes());
+
+        System.out.println("Original Text  : " + plainText);
+        System.out.println("Encrypted Text : " +
+                Base64.getEncoder().encodeToString(encrypted));
+
+        // Decryption
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] decrypted = cipher.doFinal(encrypted);
+
+        System.out.println("Decrypted Text : " +
+                new String(decrypted));
+    }
+}
+
+3b. AES algorithm
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.util.Base64;
+import java.util.*;
+
+public class AESExample {
+
+    public static void main(String[] args) throws Exception {
+
+        Scanner sc = new Scanner(System.in);
+
+        // Generate AES Key
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        keyGen.init(128);          // AES Key Size
+        SecretKey key = keyGen.generateKey();
+
+        // Create Cipher
+        Cipher cipher = Cipher.getInstance("AES");
+
+        System.out.print("Enter string: ");
+        String plainText = sc.next();
+
+        // Encryption
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encrypted = cipher.doFinal(plainText.getBytes());
+
+        System.out.println("Original Text  : " + plainText);
+        System.out.println("Encrypted Text : "
+                + Base64.getEncoder().encodeToString(encrypted));
+
+        // Decryption
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] decrypted = cipher.doFinal(encrypted);
+
+        System.out.println("Decrypted Text : "
+                + new String(decrypted));
+    }
+}
+
+3c. Blowfish
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.util.Base64;
+import java.util.*;
+
+public class BlowfishExample {
+
+    public static void main(String[] args) throws Exception {
+
+        Scanner sc = new Scanner(System.in);
+
+        // Generate Blowfish Key
+        KeyGenerator keyGen = KeyGenerator.getInstance("Blowfish");
+        SecretKey key = keyGen.generateKey();
+
+        // Create Cipher
+        Cipher cipher = Cipher.getInstance("Blowfish");
+
+        System.out.print("Enter string: ");
+        String plainText = sc.next();
+
+        // Encryption
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encrypted = cipher.doFinal(plainText.getBytes());
+
+        System.out.println("Original Text  : " + plainText);
+        System.out.println("Encrypted Text : "
+                + Base64.getEncoder().encodeToString(encrypted));
+
+        // Decryption
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] decrypted = cipher.doFinal(encrypted);
+
+        System.out.println("Decrypted Text : "
+                + new String(decrypted));
+    }
+}
+
+3d. RC4 algorithm ------If RC4 gives error replace it with "ARCFOUR" everywhere in code in place of RC4
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.util.Base64;
+import java.util.*;
+
+public class RC4Example {
+
+    public static void main(String[] args) throws Exception {
+
+        Scanner sc = new Scanner(System.in);
+
+        // Generate RC4 Key
+        KeyGenerator keyGen = KeyGenerator.getInstance("RC4");
+        SecretKey key = keyGen.generateKey();
+
+        // Create Cipher
+        Cipher cipher = Cipher.getInstance("RC4");
+
+        System.out.print("Enter string: ");
+        String plainText = sc.next();
+
+        // Encryption
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encrypted = cipher.doFinal(plainText.getBytes());
+
+        System.out.println("Original Text  : " + plainText);
+        System.out.println("Encrypted Text : "
+                + Base64.getEncoder().encodeToString(encrypted));
+
+        // Decryption
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] decrypted = cipher.doFinal(encrypted);
+
+        System.out.println("Decrypted Text : "
+                + new String(decrypted));
+    }
+}
+
+
+Extra programs:
+1. Write a simple Java program where a client connects to a server and sends text messages.
+The server must read each message and send it straight back until the client types "bye" to close the connection.
+
+Execution Steps
+Create two Java files named Server.java and Client.java.
+Copy the server code into Server.java.
+Copy the client code into Client.java.
+
+Compile both programs:
+
+javac Server.java
+javac Client.java
+
+Open the first terminal and run the server:
+
+java Server
+
+Open another terminal and run the client:
+
+java Client
+Type a message in the client window.
+The server receives the message and sends the same message back.
+Continue sending messages until "bye" is entered.
+Both client and server terminate the connection.
+
+Server.java
+import java.io.*;
+import java.net.*;
+
+
+class Server {
+    public static void main(String args[]) throws Exception {
+
+        ServerSocket ss = new ServerSocket(5000);
+        Socket s = ss.accept();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        PrintWriter pw = new PrintWriter(s.getOutputStream(), true);
+
+        String msg;
+
+        while (!(msg = br.readLine()).equals("bye")) {
+            pw.println(msg);
+        }
+
+        pw.println("bye");
+
+        s.close();
+        ss.close();
+    }
+}
+
+Client.java
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+class Client {
+    public static void main(String args[]) throws Exception {
+
+        Socket s = new Socket("localhost", 5000);
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        PrintWriter pw = new PrintWriter(s.getOutputStream(), true);
+
+        Scanner sc = new Scanner(System.in);
+
+        String msg;
+
+        do {
+            System.out.print("Enter: ");
+            msg = sc.nextLine();
+            pw.println(msg);
+            System.out.println("Server: " + br.readLine());
+        } while (!msg.equals("bye"));
+
+        s.close();
+    }
+}
+
+2. Write a simple Java program where a client sends text messages to a server. 
+The server must change the text to uppercase and send it straight back until the client types "bye" to close the connection.
+
+Server.java
+import java.io.*;
+import java.net.*;
+
+
+class Server {
+    public static void main(String args[]) throws Exception {
+
+        ServerSocket ss = new ServerSocket(5000);
+        Socket s = ss.accept();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        PrintWriter pw = new PrintWriter(s.getOutputStream(), true);
+
+        String msg;
+
+        while (!(msg = br.readLine()).equals("bye")) {
+            pw.println(msg.toUpperCase());
+        }
+
+        pw.println("BYE");
+
+        s.close();
+        ss.close();
+    }
+}
+
+Client.java
+----------same code as 1st program client.java
+import java.io.*;
+import java.net.*;
+
+class Server {
+    public static void main(String args[]) throws Exception {
+
+        ServerSocket ss = new ServerSocket(5000);
+        Socket s = ss.accept();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        PrintWriter pw = new PrintWriter(s.getOutputStream(), true);
+
+        String msg;
+
+        while (!(msg = br.readLine()).equals("bye")) {
+            pw.println(msg.toUpperCase());
+        }
+
+        pw.println("BYE");
+
+        s.close();
+        ss.close();
+    }
+}
+
+3. Simple DES
+import java.util.*;
+
+public class SDES {
+
+    static int[] IP = {2,6,3,1,4,8,5,7};
+    static int[] IPI = {4,1,3,5,7,2,8,6};
+
+    static String permute(String s, int p[]) {
+        String r = "";
+        for(int i=0;i<p.length;i++)
+            r += s.charAt(p[i]-1);
+        return r;
+    }
+
+    static String xor(String a,String b){
+        String r="";
+        for(int i=0;i<a.length();i++)
+            r+=(a.charAt(i)==b.charAt(i))?'0':'1';
+        return r;
+    }
+
+    public static void main(String args[]) {
+
+        Scanner sc=new Scanner(System.in);
+
+        System.out.print("Enter 8-bit Plain Text: ");
+        String pt=sc.next();
+
+        System.out.print("Enter 8-bit Key: ");
+        String key=sc.next();
+
+        // Initial Permutation
+        String ip=permute(pt,IP);
+
+        // fk using key (simplified)
+        String left=ip.substring(0,4);
+        String right=ip.substring(4);
+
+        String x=xor(right,key.substring(0,4));
+
+        // Swap
+        String sw=right+x;
+
+        // fk using second key (simplified)
+        left=sw.substring(0,4);
+        right=sw.substring(4);
+
+        x=xor(right,key.substring(4));
+
+        String pre=left+x;
+
+        // Inverse IP
+        String cipher=permute(pre,IPI);
+
+        System.out.println("Encrypted: "+cipher);
+
+        // Decryption
+        String ip2=permute(cipher,IP);
+
+        left=ip2.substring(0,4);
+        right=ip2.substring(4);
+
+        x=xor(right,key.substring(4));
+
+        sw=right+x;
+
+        left=sw.substring(0,4);
+        right=sw.substring(4);
+
+        x=xor(right,key.substring(0,4));
+
+        String plain=permute(left+x,IPI);
+
+        System.out.println("Decrypted: "+plain);
+    }
 }

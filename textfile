@@ -1,4 +1,5 @@
-1. Write a program that contains a string (char pointer) with a value ‘Hello world’. The program should XOR and AND each character in this string with 0 and 127, and display the result.
+1. Write a program that contains a string (char pointer) with a value ‘Hello world’. 
+The program should XOR and AND each character in this string with 0 and 127, and display the result.
 public class XorAnd {
     public static void main(String[] args) {
         String str = "Hello World";
